@@ -4,14 +4,17 @@ import requests
 import os
 from dotenv import load_dotenv
 
+# Load .env file
 load_dotenv()
 
+# Initialize FastAPI app
 app = FastAPI()
 
+# Define request schema
 class ChatRequest(BaseModel):
     prompt: str
 
-@app.post("/chat")
+# Define the /chat POST endpoint
 @app.post("/chat")
 def chat(request: ChatRequest):
     api_key = os.getenv("GROQ_API_KEY")
@@ -34,19 +37,17 @@ def chat(request: ChatRequest):
         json=payload
     )
 
-    # 🛠️ DEBUG: show full Groq response
     try:
         json_response = response.json()
-    except Exception as e:
+    except Exception:
         return {"error": "Invalid JSON response", "raw": response.text}
 
     if response.status_code != 200:
         return {"error": json_response}
 
-    # 🧠 Check where message is
     try:
         return {"response": json_response["choices"][0]["message"]["content"]}
-    except Exception as e:
+    except Exception:
         return {
             "error": "Could not extract message",
             "full_response": json_response
