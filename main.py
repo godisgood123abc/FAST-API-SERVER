@@ -4,17 +4,18 @@ import requests
 import os
 from dotenv import load_dotenv
 
-# Load .env file
 load_dotenv()
 
-# Initialize FastAPI app
 app = FastAPI()
 
-# Define request schema
+# ✅ This will show "Hello World" if someone visits the root URL in a browser
+@app.get("/")
+def root():
+    return {"message": "Hello World"}
+
 class ChatRequest(BaseModel):
     prompt: str
 
-# Define the /chat POST endpoint
 @app.post("/chat")
 def chat(request: ChatRequest):
     api_key = os.getenv("GROQ_API_KEY")
@@ -52,3 +53,4 @@ def chat(request: ChatRequest):
             "error": "Could not extract message",
             "full_response": json_response
         }
+
